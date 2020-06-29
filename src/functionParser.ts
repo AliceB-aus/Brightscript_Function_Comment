@@ -13,10 +13,10 @@ export class ParamDeclaration {
 //  ' 
 //  ' @param  {String} viewId=""
 //  ' @param  {Object} content=invalid
-//  '''''''''
+//  ''''''''
 export function getParameterText(paramList: ParamDeclaration[], returnText: string = '', functionName: string = '' ): string {
 	var textToInsert: string = "";
-    textToInsert = textToInsert + ' \'\'\'\'\'\'\'\n \'' + functionName + ": \n '\n '";
+    textToInsert = textToInsert + ' \'\'\'\'\'\'\'\'\n \'' + functionName + ": \n '\n '";
     
 	paramList.forEach(element => {
 		if (element.paramName !== '') {
@@ -28,7 +28,7 @@ export function getParameterText(paramList: ParamDeclaration[], returnText: stri
 	if (returnText !== '') {
 		textToInsert = textToInsert + ' @returns ' + returnText + '\n' + ' \'';
 	}
-	textToInsert = textToInsert + '\'\'\'\'\'\'\'\'';
+	textToInsert = textToInsert + '\'\'\'\'\'\'\'';
 	return textToInsert;
 }
 
@@ -39,7 +39,7 @@ export function getReturns(text : string ): string {
 
     // check if a return type in avaiable by comparing indexs 
     var lastBrace = text.lastIndexOf(')');
-    var lastAs = text.lastIndexOf('as');
+    var lastAs = text.toUpperCase().lastIndexOf('AS');
 
 	if (lastBrace < lastAs) {
 		//we have a return type
@@ -95,7 +95,7 @@ export function getParameters(text: string): ParamDeclaration[] {
             return paramList;
         }
         // get all the text until the name has ended 
-        while (((text.charAt(index) !== 'a') || (text.charAt(index+1) !== 's')) // as and hence param type
+        while (((text.charAt(index).toUpperCase() !== 'A') || (text.charAt(index+1).toUpperCase() !== 'S')) // as and hence param type
         && (text.charAt(index) !== ',') // no param type
         && (text.charAt(index) !== ')') // end of function with no param type 
         && (index < text.length) ){ // end of string 
