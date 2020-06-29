@@ -2,7 +2,7 @@
 	"name": "brightscriptcomment",
 	"displayName": "Brightscript Function Comment",
 	"description": "Adds jsdoc @param and @return tags for selected function signatures in Brightscript",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.45.1"
 	},
@@ -10,7 +10,11 @@
 	"categories": [
 		"Other"
 	],
-	"keywords": ["function", "comment", "brightscript"],
+	"keywords": [
+		"function",
+		"comment",
+		"brightscript"
+	],
 	"activationEvents": [
 		"onCommand:brightscriptcomment.brightScriptAddComment"
 	],
@@ -48,16 +52,13 @@
 	"dependencies": {
 		"indent-string": "^4.0.0"
 	},
-	
 	"galleryBanner": {
 		"color": "#662D91",
 		"theme": "dark"
 	},
-	
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/AliceB-aus/Brightscript_Function_Comment.git"
-	  },
-	  "homepage": "https://github.com/AliceB-aus/Brightscript_Function_Comment/README.md"
-	}
-	
+	},
+	"homepage": "https://github.com/AliceB-aus/Brightscript_Function_Comment/README.md"
+}
