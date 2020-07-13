@@ -14,7 +14,7 @@ Example:
     ' @param  {Object} content
     ' @returns String
     ''''''''
-    Sub OpenView(viewId = "" as String,content as Object) as String
+    Function OpenView(viewId = "" as String,content as Object) as String
 
 ## To Use:
 1. Highlight the whole line with the function definition you wish to comment 
