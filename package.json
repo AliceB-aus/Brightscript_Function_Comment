@@ -26,7 +26,14 @@
 				"command": "brightscriptcomment.brightScriptAddComment",
 				"title": "Brightscript Add Function Comment"
 			}
-		]
+		],
+		"keybindings": [
+            {
+                "command": "brightscriptcomment.brightScriptAddComment",
+                "key": "alt+ctrl+/",
+                "mac": "alt+cmd+/"
+            }
+        ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
