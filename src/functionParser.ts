@@ -16,17 +16,17 @@ export class ParamDeclaration {
 //  ''''''''
 export function getParameterText(paramList: ParamDeclaration[], returnText: string = '', functionName: string = '' ): string {
 	var textToInsert: string = "";
-    textToInsert = textToInsert + ' \'\'\'\'\'\'\'\'\n \'' + functionName + ": \n '\n '";
+    textToInsert = textToInsert + '\'\'\'\'\'\'\'\'\n\'' + functionName + ": \n'\n'";
     
 	paramList.forEach(element => {
 		if (element.paramName !== '') {
 			textToInsert = textToInsert + ' @param  ';
 			textToInsert = textToInsert + '{' + element.paramType + '}' + ' ';
-			textToInsert = textToInsert + element.paramName + '\n' + ' \'';
+			textToInsert = textToInsert + element.paramName + '\n' + '\'';
 		}
 	});
 	if (returnText !== '') {
-		textToInsert = textToInsert + ' @returns ' + returnText + '\n' + ' \'';
+		textToInsert = textToInsert + ' @returns ' + returnText + '\n' + '\'';
 	}
 	textToInsert = textToInsert + '\'\'\'\'\'\'\'';
 	return textToInsert;
@@ -55,14 +55,14 @@ export function getReturns(text : string ): string {
 }
 
 //strip any comments out of the text 
-//since brightscript has no end comment it will stop on the first '
+//since brightscript has no end comment it will collect everything after a ' and assume this is all the comment 
 export function stripComments(text: string): string {
 	var uncommentedText: string = '';
 	var index = 0;
 	while (index !== text.length) {
 		// if the letter is a '
 		if ((text.charAt(index) === '\'') ) {
-			// we have hit comment. scrap the rest of the text 
+			// we have hit a comment. Scrap the rest of the text 
             index = text.length;
 		}
 		else {

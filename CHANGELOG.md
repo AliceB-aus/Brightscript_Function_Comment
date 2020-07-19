@@ -6,3 +6,4 @@ All notable changes to the "brightscriptcomment" extension will be documented in
 
 - 0.1 Initial release
 - 0.2 Updated to support formatting differences in function names 
+- 0.3 Updated Read Me example, added type check for when the function returns value
