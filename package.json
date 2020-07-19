@@ -2,7 +2,7 @@
 	"name": "brightscriptcomment",
 	"displayName": "Brightscript Function Comment",
 	"description": "Adds jsdoc @param and @return tags for selected function signatures in Brightscript",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"engines": {
 		"vscode": "^1.45.1"
 	},
@@ -28,12 +28,12 @@
 			}
 		],
 		"keybindings": [
-            {
-                "command": "brightscriptcomment.brightScriptAddComment",
-                "key": "alt+ctrl+/",
-                "mac": "alt+cmd+/"
-            }
-        ]
+			{
+				"command": "brightscriptcomment.brightScriptAddComment",
+				"key": "alt+ctrl+/",
+				"mac": "alt+cmd+/"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
