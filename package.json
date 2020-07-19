@@ -2,7 +2,7 @@
 	"name": "brightscriptcomment",
 	"displayName": "Brightscript Function Comment",
 	"description": "Adds jsdoc @param and @return tags for selected function signatures in Brightscript",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.45.1"
 	},
