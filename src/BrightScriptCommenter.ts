@@ -48,10 +48,11 @@ interface FunctionAtLine {
 export class BrightScriptCommenter {
   private parser: bs.Parser = new bs.Parser();
   private addJsStyleComments = false;
-  private addExtraAtStartAndEnd = false;
-  private addFunctionName = false;
-  private useLowercaseTypeNames = true;
+  private addExtraAtStartAndEnd = true;
+  private addFunctionName = true;
+  private useLowercaseTypeNames = false;
   private useSimpleTypeNames = true;
+  private useDynamicIfNoTypeGiven = false;
 
   constructor() {
   }
@@ -59,10 +60,11 @@ export class BrightScriptCommenter {
 
   private refreshCurrentConfig(): void {
     this.addJsStyleComments = vscode.workspace.getConfiguration().get(`brightscriptcomment.addJsStyleComments`, false);
-    this.addExtraAtStartAndEnd = vscode.workspace.getConfiguration().get(`brightscriptcomment.addExtraAtStartAndEnd`, false);
-    this.addFunctionName = vscode.workspace.getConfiguration().get(`brightscriptcomment.addFunctionName`, false);
-    this.useLowercaseTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useLowercaseTypeNames`, true);
+    this.addExtraAtStartAndEnd = vscode.workspace.getConfiguration().get(`brightscriptcomment.addExtraAtStartAndEnd`, true);
+    this.addFunctionName = vscode.workspace.getConfiguration().get(`brightscriptcomment.addFunctionName`, true);
+    this.useLowercaseTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useLowercaseTypeNames`, false);
     this.useSimpleTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useSimpleTypeNames`, true);
+    this.useDynamicIfNoTypeGiven = vscode.workspace.getConfiguration().get(`brightscriptcomment.useDynamicIfNoTypeGiven`, false);
   }
 
 
@@ -96,7 +98,7 @@ export class BrightScriptCommenter {
         editBuilder.delete(replaceRange);
       }
     }).then(() => {
-      let funcStmtAtLine = this.getFunctionStatementForLine(editor.document, currentLine)
+      let funcStmtAtLine = <FunctionAtLine>this.getFunctionStatementForLine(editor.document, currentLine)
         || this.getFunctionStatementForLine(editor.document, currentLine, true);
 
       const funcStmt = funcStmtAtLine?.funcStmt;
@@ -212,8 +214,8 @@ export class BrightScriptCommenter {
    * @memberof BrightScriptCommenter
    */
   private getParametersLines(funcExpr: FunctionAtLine): string[] {
-    const paramsText = [] || funcExpr.funcStmt?.func.parameters.map((param) => {
-      const paramTypeText = this.getTypeName(param.type.kind);
+    const paramsText = (funcExpr.funcStmt?.func.parameters || []).map((param) => {
+      const paramTypeText = this.getTypeName(param.type.kind, param.asToken);
       let paramNameText = param.name.text;
       if (param.defaultValue) {
         const start = param.defaultValue.range.start;
@@ -221,7 +223,7 @@ export class BrightScriptCommenter {
         const defaultValue = funcExpr.lineOfCode?.slice(start.character, end.character);
         paramNameText = `[${param.name.text}=${defaultValue}]`;
       }
-      return `@params {${paramTypeText}} ${paramNameText}`;
+      return `@param {${paramTypeText}} ${paramNameText}`;
     });
 
     return paramsText;
@@ -249,6 +251,9 @@ export class BrightScriptCommenter {
       }
       if (returnType) {
         returnStr = `@return {${returnType}}`;
+      }
+      else {
+        returnStr = `@return`;
       }
     }
     return returnStr;
@@ -286,11 +291,11 @@ export class BrightScriptCommenter {
    * Defaults to "Dynamic" if it can't decide
    *
    * @param { number | bs.Token } type id or Type Token
+   * @param { bs.Token } token actual token for the type name
    * @returns {string} the name for the type id given
    */
-  private getTypeName(type: number | bs.Token): string {
-    let typeName = "Dynamic";
-
+  private getTypeName(type: number | bs.Token, token?: bs.Token): string {
+    let typeName = this.useDynamicIfNoTypeGiven ? "Dynamic" : "";
     if (type) {
       if (typeof type === "number") {
         const valueKind = bs.ValueKind[type];
@@ -307,6 +312,11 @@ export class BrightScriptCommenter {
 
           if (this.useLowercaseTypeNames) {
             typeName = typeName.toLowerCase();
+          }
+
+          if (typeName.toLowerCase() === "dynamic" && !token && !this.useDynamicIfNoTypeGiven) {
+            // no actual type was used in the definition, and config says not to use "dynamic"
+            typeName = "";
           }
         }
       }

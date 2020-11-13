@@ -34,8 +34,6 @@ This extension adds a BrightScriptDoc-style comment to a Brightscript function. 
 Comment will appear as above.
 If the function is not formatted correctly the comment may fail or be deformed.
 
-Credit to https://github.com/microsoft/vscode-comment for the base code used in this project
-
 ### Keyboard Shortcuts
 
 The extension registers keyboard shortcut brightscriptcomment.brightScriptAddComment to execute checking immediately. Default shortcut is Alt-Ctrl-C (Alt-Cmd-C for Mac).
@@ -53,13 +51,21 @@ Brightscript Function Comment has a few options for styling the comments:
 - `brightscriptcomment.addJsStyleComments`:
   When enabled, wraps comments in JS-style /\*\* \*/ comment tags. (default - false)
 - `brightscriptcomment.addExtraAtStartAndEnd`:
-  When enabled, adds extra comment markers at beginning and end (''''') to delineate the comment. (default - false)
+  When enabled, adds extra comment markers at beginning and end (''''') to delineate the comment. (default - true)
 - `brightscriptcomment.addFunctionName`:
-  When enabled, adds the function name and a colon to the comment. (default - false)
+  When enabled, adds the function name and a colon to the comment. (default - true)
 - `brightscriptcomment.useLowercaseTypeName`:
-  When enabled, docs will use 'string' or 'object' instead of 'String' or 'Object', etc. (default - true)
+  When enabled, docs will use 'string' or 'object' instead of 'String' or 'Object', etc. (default - false)
 - `brightscriptcomment.useSimpleTypeNames`:
   When enabled, docs use 'Integer' and 'LongInteger' instead of 'Int32' and 'Int64' (default - true)
+- `brightscriptcomment.useDynamicIfNoTypeGiven`:
+  When enabled, params will use 'Dynamic' as their types if no type was given (default - false)
+
+## Credit
+
+Credit to https://github.com/microsoft/vscode-comment for the base code used in this project
+
+Many ideas and code samples were used from https://github.com/joelday/vscode-docthis
 
 ## Issues and Contributing:
 
