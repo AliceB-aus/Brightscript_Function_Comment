@@ -60,6 +60,8 @@ Brightscript Function Comment has a few options for styling the comments:
   When enabled, docs use 'Integer' and 'LongInteger' instead of 'Int32' and 'Int64' (default - true)
 - `brightscriptcomment.useDynamicIfNoTypeGiven`:
   When enabled, params will use 'Dynamic' as their types if no type was given (default - false)
+- `brightscriptcomment.addReturnOnVoidFunctions`
+  When enabled, functions that are 'as void' and subs will not have the @return tag
 
 ## Credit
 

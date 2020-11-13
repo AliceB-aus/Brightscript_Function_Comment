@@ -69,6 +69,11 @@
           "type": "boolean",
           "default": false,
           "description": "When enabled, params will use 'Dynamic' as their types if no type was given"
+        },
+        "brightscriptcomment.addReturnOnVoidFunctions": {
+          "type": "boolean",
+          "default": false,
+          "description": "When enabled, functions that are 'as void' and subs will not have the @return tag"
         }
       }
     }

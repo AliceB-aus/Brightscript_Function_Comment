@@ -53,6 +53,7 @@ export class BrightScriptCommenter {
   private useLowercaseTypeNames = false;
   private useSimpleTypeNames = true;
   private useDynamicIfNoTypeGiven = false;
+  private addReturnOnVoidFunctions = false;
 
   constructor() {
   }
@@ -65,6 +66,7 @@ export class BrightScriptCommenter {
     this.useLowercaseTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useLowercaseTypeNames`, false);
     this.useSimpleTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useSimpleTypeNames`, true);
     this.useDynamicIfNoTypeGiven = vscode.workspace.getConfiguration().get(`brightscriptcomment.useDynamicIfNoTypeGiven`, false);
+    this.addReturnOnVoidFunctions = vscode.workspace.getConfiguration().get(`brightscriptcomment.addReturnOnVoidFunctions`, false);
   }
 
 
@@ -251,6 +253,9 @@ export class BrightScriptCommenter {
       }
       if (returnType) {
         returnStr = `@return {${returnType}}`;
+        if (returnType.toLowerCase() === "void" && !this.addReturnOnVoidFunctions) {
+          returnStr = "";
+        }
       }
       else {
         returnStr = `@return`;
