@@ -111,9 +111,11 @@ export class BrightScriptCommenter {
         return;
       }
 
+      //Get the information about the function
       const paramsLines = this.getParametersLines(funcStmtAtLine);
       const returnText = this.getReturnText(funcStmt.func);
       const snippetToInsert = this.getCommentSnippet(paramsLines, returnText, funcStmt.name.text);
+      
       // Find place where snippet should be inserted
       const firstNonWhiteSpace = editor.document.lineAt(commentStartLine).firstNonWhitespaceCharacterIndex;
       const commentPos = new vscode.Position(commentStartLine, firstNonWhiteSpace);
@@ -261,8 +263,26 @@ export class BrightScriptCommenter {
         returnStr = `@return`;
       }
     }
+    else{ // this is a sub
+       let returnType = "";
+       let outputMessage = "Sub type should not have a return parameter - consider updating declaration";
+
+      if (funcExpr.functionStatement){
+        if (funcExpr.functionStatement.name.text != undefined){
+          outputMessage = "Sub type should not have a return parameter - consider updating " + funcExpr.functionStatement.name.text + " declaration";
+        }
+      }
+      //If it's a sub with a return type thats not void then warn the user 
+      if (funcExpr.returnTypeToken) {
+        returnType = this.getTypeName(funcExpr.returnTypeToken);
+      }
+      if (returnType.toLowerCase() != "void") {
+        vscode.window.showWarningMessage(outputMessage)
+      }
+    }
     return returnStr;
   }
+
 
   /**
    * Returns the whole BrightScriptDoc comment as a snippet, with tabstops
