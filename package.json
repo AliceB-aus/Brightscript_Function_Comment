@@ -63,17 +63,22 @@
         "brightscriptcomment.useSimpleTypeNames": {
           "type": "boolean",
           "default": true,
-          "description": "When enabled, docs use 'Integer' and 'LongInteger' instead of 'Int32' and 'Int64'"
+          "description": "When enabled, docs use 'Integer' and 'LongInteger' instead of 'Int32' and 'Int64'."
         },
         "brightscriptcomment.useDynamicIfNoTypeGiven": {
           "type": "boolean",
           "default": false,
-          "description": "When enabled, params will use 'Dynamic' as their types if no type was given"
+          "description": "When enabled, params will use 'Dynamic' as their types if no type was given."
         },
         "brightscriptcomment.addReturnOnVoidFunctions": {
           "type": "boolean",
           "default": false,
-          "description": "When enabled, functions that are 'as void' and subs will not have the @return tag"
+          "description": "When enabled, functions that are 'as void' and subs will not have the @return tag."
+        },
+        "brightscriptcomment.addReturnWarningOnSub": {
+          "type": "boolean",
+          "default": true,
+          "description": "When enabled, warns user when a sub returns a non 'as void' property."
         }
       }
     }

@@ -61,13 +61,17 @@ Brightscript Function Comment has a few options for styling the comments:
 - `brightscriptcomment.useDynamicIfNoTypeGiven`:
   When enabled, params will use 'Dynamic' as their types if no type was given (default - false)
 - `brightscriptcomment.addReturnOnVoidFunctions`
-  When enabled, functions that are 'as void' and subs will not have the @return tag
+  When enabled, functions that are 'as void' and subs will not have the @return tag  (default - false)
+- `brightscriptcomment.addReturnOnVoidFunctions`
+  When enabled, warns the user when a sub returns a non 'as void' property  (default - true)
 
 ## Credit
 
 Credit to https://github.com/microsoft/vscode-comment for the base code used in this project
 
 Many ideas and code samples were used from https://github.com/joelday/vscode-docthis
+
+Thanks to @markwpearce for the help and significant feature uplift 
 
 ## Issues and Contributing:
 
