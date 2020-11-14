@@ -54,6 +54,7 @@ export class BrightScriptCommenter {
   private useSimpleTypeNames = true;
   private useDynamicIfNoTypeGiven = false;
   private addReturnOnVoidFunctions = false;
+  private addReturnWarningOnSub = true;
 
   constructor() {
   }
@@ -67,6 +68,8 @@ export class BrightScriptCommenter {
     this.useSimpleTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useSimpleTypeNames`, true);
     this.useDynamicIfNoTypeGiven = vscode.workspace.getConfiguration().get(`brightscriptcomment.useDynamicIfNoTypeGiven`, false);
     this.addReturnOnVoidFunctions = vscode.workspace.getConfiguration().get(`brightscriptcomment.addReturnOnVoidFunctions`, false);
+    this.addReturnWarningOnSub = vscode.workspace.getConfiguration().get(`brightscriptcomment.addReturnWarningOnSub`, true);
+
   }
 
 
@@ -269,14 +272,14 @@ export class BrightScriptCommenter {
 
       if (funcExpr.functionStatement){
         if (funcExpr.functionStatement.name.text != undefined){
-          outputMessage = "Sub type should not have a return parameter - consider updating " + funcExpr.functionStatement.name.text + " declaration";
+          outputMessage = "Sub type should not have a return parameter - consider updating the " + funcExpr.functionStatement.name.text + " declaration";
         }
       }
       //If it's a sub with a return type thats not void then warn the user 
       if (funcExpr.returnTypeToken) {
         returnType = this.getTypeName(funcExpr.returnTypeToken);
       }
-      if (returnType.toLowerCase() != "void") {
+      if (returnType.toLowerCase() != "void" && this.addReturnWarningOnSub) {
         vscode.window.showWarningMessage(outputMessage)
       }
     }
