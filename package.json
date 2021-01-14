@@ -55,15 +55,10 @@
           "default": true,
           "description": "When enabled, adds the function name and a colon to the comment."
         },
-        "brightscriptcomment.useLowercaseTypeNames": {
+        "brightscriptcomment.useUppercaseTypeNames": {
           "type": "boolean",
           "default": false,
-          "description": "When enabled, docs will use 'string' or 'object' instead of 'String' or 'Object', etc."
-        },
-        "brightscriptcomment.useSimpleTypeNames": {
-          "type": "boolean",
-          "default": true,
-          "description": "When enabled, docs use 'Integer' and 'LongInteger' instead of 'Int32' and 'Int64'."
+          "description": "When enabled, docs will use 'String' or 'Object' instead of 'string' or 'object', etc."
         },
         "brightscriptcomment.useDynamicIfNoTypeGiven": {
           "type": "boolean",
@@ -108,7 +103,7 @@
     "vscode-test": "^1.3.0"
   },
   "dependencies": {
-    "brighterscript": "^0.20.0"
+    "brighterscript": "^0.25.0"
   },
   "galleryBanner": {
     "color": "#662D91",

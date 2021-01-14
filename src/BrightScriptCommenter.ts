@@ -50,11 +50,11 @@ export class BrightScriptCommenter {
   private addJsStyleComments = false;
   private addExtraAtStartAndEnd = true;
   private addFunctionName = true;
-  private useLowercaseTypeNames = false;
-  private useSimpleTypeNames = true;
+  private useUppercaseTypeNames = false;
   private useDynamicIfNoTypeGiven = false;
   private addReturnOnVoidFunctions = false;
   private addReturnWarningOnSub = true;
+  private isBrighterscript = false;
 
   constructor() {
   }
@@ -64,8 +64,7 @@ export class BrightScriptCommenter {
     this.addJsStyleComments = vscode.workspace.getConfiguration().get(`brightscriptcomment.addJsStyleComments`, false);
     this.addExtraAtStartAndEnd = vscode.workspace.getConfiguration().get(`brightscriptcomment.addExtraAtStartAndEnd`, true);
     this.addFunctionName = vscode.workspace.getConfiguration().get(`brightscriptcomment.addFunctionName`, true);
-    this.useLowercaseTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useLowercaseTypeNames`, false);
-    this.useSimpleTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useSimpleTypeNames`, true);
+    this.useUppercaseTypeNames = vscode.workspace.getConfiguration().get(`brightscriptcomment.useUppercaseTypeNames`, false);
     this.useDynamicIfNoTypeGiven = vscode.workspace.getConfiguration().get(`brightscriptcomment.useDynamicIfNoTypeGiven`, false);
     this.addReturnOnVoidFunctions = vscode.workspace.getConfiguration().get(`brightscriptcomment.addReturnOnVoidFunctions`, false);
     this.addReturnWarningOnSub = vscode.workspace.getConfiguration().get(`brightscriptcomment.addReturnWarningOnSub`, true);
@@ -88,6 +87,7 @@ export class BrightScriptCommenter {
       return;
     }
     this.refreshCurrentConfig();
+    this.isBrighterscript = editor?.document?.languageId?.toLowerCase() === "brighterscript";
 
     const selection = editor.selection;
     const caret = selection.start;
@@ -118,7 +118,7 @@ export class BrightScriptCommenter {
       const paramsLines = this.getParametersLines(funcStmtAtLine);
       const returnText = this.getReturnText(funcStmt.func);
       const snippetToInsert = this.getCommentSnippet(paramsLines, returnText, funcStmt.name.text);
-      
+
       // Find place where snippet should be inserted
       const firstNonWhiteSpace = editor.document.lineAt(commentStartLine).firstNonWhitespaceCharacterIndex;
       const commentPos = new vscode.Position(commentStartLine, firstNonWhiteSpace);
@@ -199,7 +199,11 @@ export class BrightScriptCommenter {
     }
 
     const lexResult = bs.Lexer.scan(funcLine);
-    const parseResult = this.parser.parse(lexResult.tokens);
+    const options = { mode: bs.ParseMode.BrightScript };
+    if (this.isBrighterscript) {
+      options.mode = bs.ParseMode.BrighterScript;
+    }
+    const parseResult = this.parser.parse(lexResult.tokens, options);
     const statements = parseResult.statements;
     let funcStmtResult = <bs.FunctionStatement>statements.find(stmt => stmt instanceof bs.ClassMethodStatement);
 
@@ -222,7 +226,7 @@ export class BrightScriptCommenter {
    */
   private getParametersLines(funcExpr: FunctionAtLine): string[] {
     const paramsText = (funcExpr.funcStmt?.func.parameters || []).map((param) => {
-      const paramTypeText = this.getTypeName(param.type.kind, param.asToken);
+      const paramTypeText = this.getTypeName(param.type);
       let paramNameText = param.name.text;
       if (param.defaultValue) {
         const start = param.defaultValue.range.start;
@@ -249,13 +253,7 @@ export class BrightScriptCommenter {
     if (!funcExpr.functionType?.text.toLowerCase().includes("sub")) {
       // this is not a sub, but a function
       // include a @returns line
-      let returnType = "";
-      if (funcExpr.returnTypeToken) {
-        returnType = this.getTypeName(funcExpr.returnTypeToken);
-      }
-      else {
-        returnType = this.getTypeName(funcExpr.returns);
-      }
+      let returnType = this.getTypeName(funcExpr.returnType);
       if (returnType) {
         returnStr = `@return {${returnType}}`;
         if (returnType.toLowerCase() === "void" && !this.addReturnOnVoidFunctions) {
@@ -266,21 +264,21 @@ export class BrightScriptCommenter {
         returnStr = `@return`;
       }
     }
-    else{ // this is a sub
-       let returnType = "";
-       let outputMessage = "Sub type should not have a return parameter - consider updating declaration";
+    else { // this is a sub
+      let returnType = "";
+      let outputMessage = "Sub type should not have a return parameter - consider updating declaration";
 
-      if (funcExpr.functionStatement){
-        if (funcExpr.functionStatement.name.text != undefined){
+      if (funcExpr.functionStatement) {
+        if (funcExpr.functionStatement.name.text !== undefined) {
           outputMessage = "Sub type should not have a return parameter - consider updating the " + funcExpr.functionStatement.name.text + " declaration";
         }
       }
-      //If it's a sub with a return type thats not void then warn the user 
+      //If it's a sub with a return type thats not void then warn the user
       if (funcExpr.returnTypeToken) {
         returnType = this.getTypeName(funcExpr.returnTypeToken);
       }
-      if (returnType.toLowerCase() != "void" && this.addReturnWarningOnSub) {
-        vscode.window.showWarningMessage(outputMessage)
+      if (returnType.toLowerCase() !== "void" && this.addReturnWarningOnSub) {
+        vscode.window.showWarningMessage(outputMessage);
       }
     }
     return returnStr;
@@ -318,40 +316,21 @@ export class BrightScriptCommenter {
    * Gets the type name for the given type
    * Defaults to "Dynamic" if it can't decide
    *
-   * @param { number | bs.Token } type id or Type Token
-   * @param { bs.Token } token actual token for the type name
+   * @param {bs.BscType } type to get name for
    * @returns {string} the name for the type id given
    */
-  private getTypeName(type: number | bs.Token, token?: bs.Token): string {
-    let typeName = this.useDynamicIfNoTypeGiven ? "Dynamic" : "";
+  private getTypeName(type: any): string {
+    let typeName = this.useDynamicIfNoTypeGiven ? "dynamic" : "";
     if (type) {
-      if (typeof type === "number") {
-        const valueKind = bs.ValueKind[type];
-        if (valueKind) {
-          typeName = valueKind.toString();
-          if (this.useSimpleTypeNames) {
-            if (typeName === "Int32") {
-              typeName = "Integer";
-            }
-            else if (typeName === "Int64") {
-              typeName = "LongInteger";
-            }
-          }
-
-          if (this.useLowercaseTypeNames) {
-            typeName = typeName.toLowerCase();
-          }
-
-          if (typeName.toLowerCase() === "dynamic" && !token && !this.useDynamicIfNoTypeGiven) {
-            // no actual type was used in the definition, and config says not to use "dynamic"
-            typeName = "";
-          }
-        }
+      if (bs.isCustomType(type)) {
+        typeName = type.name;
       }
-      else if ((<bs.Token>type).text) {
-        // if we can only look at the text value, just go ahead and use that
-        typeName = type.text;
+      else if (type.toTypeString) {
+        typeName = type.toTypeString();
       }
+    }
+    if (this.useUppercaseTypeNames && typeName.length > 0) {
+      typeName = typeName.charAt(0).toUpperCase() + typeName.slice(1);
     }
     return typeName;
   }
