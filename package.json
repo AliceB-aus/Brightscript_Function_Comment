@@ -103,7 +103,7 @@
     "vscode-test": "^1.3.0"
   },
   "dependencies": {
-    "brighterscript": "^0.25.0"
+    "brighterscript": "^0.35.0"
   },
   "galleryBanner": {
     "color": "#662D91",

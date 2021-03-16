@@ -107,7 +107,7 @@ export class BrightScriptCommenter {
         || this.getFunctionStatementForLine(editor.document, currentLine, true);
 
       const funcStmt = funcStmtAtLine?.funcStmt;
-      const commentStartLine = <number>funcStmtAtLine?.lineNumber;
+      const commentStartLine = this.getCommentStartLine(funcStmtAtLine);
 
       if (!funcStmt || undefined === commentStartLine) {
         vscode.window.showInformationMessage(outputMessage);
@@ -141,9 +141,11 @@ export class BrightScriptCommenter {
     let currentLine = startLine;
     let funcStmtResult;
     let searchLineDelta = searchUp ? -1 : +1;
+    const linesSoFar: string[] = [];
     while (currentLine < document.lineCount && currentLine >= 0) {
       textLine = document.lineAt(currentLine);
-      funcStmtResult = this.getFunctionStatement(textLine.text);
+      funcStmtResult = this.getFunctionStatement(linesSoFar.join("\n") + "\n" + textLine.text);
+      linesSoFar.push(textLine.text);
       if (funcStmtResult) {
         if (funcStmtResult.cameToEndOfFunction) {
           return undefined;
@@ -167,10 +169,11 @@ export class BrightScriptCommenter {
   private getFunctionStatement(sourceLine: string): FunctionAtLine | undefined {
     // Get the first line that is a sub or function, remove modifiers, and close off the function, so it can be parsed
     let isFunc = false, isSub = false, endOfFunction = false;
+    let potentialAnnotations = "";
     let funcLine = sourceLine.split("\n")
       .map(line => line.trim().replace(/^\s*((private)|(public)|(override)|\s*)*\s*/, ""))
-      .filter(line => line)
       .find(line => {
+
         // simplify the line to check for sub or function
         const brsLine = line.toLowerCase();
 
@@ -179,7 +182,13 @@ export class BrightScriptCommenter {
 
         endOfFunction = brsLine.startsWith("end sub") || brsLine.startsWith("end function");
 
-        return isFunc || isSub || endOfFunction;
+        const foundFunction = isFunc || isSub || endOfFunction;
+
+        if (!foundFunction) {
+          potentialAnnotations += line + "\n";
+        }
+
+        return foundFunction;
       });
     if (endOfFunction) {
       return { cameToEndOfFunction: true };
@@ -198,7 +207,8 @@ export class BrightScriptCommenter {
       funcLine += "\nend sub\n";
     }
 
-    const lexResult = bs.Lexer.scan(funcLine);
+
+    const lexResult = bs.Lexer.scan(potentialAnnotations + funcLine);
     const options = { mode: bs.ParseMode.BrightScript };
     if (this.isBrighterscript) {
       options.mode = bs.ParseMode.BrighterScript;
@@ -214,6 +224,24 @@ export class BrightScriptCommenter {
     return { funcStmt: funcStmtResult, lineOfCode };
   }
 
+  /**
+   * Gets the line an inserted comment should be placed at
+   * Takes into account annotations, and comments are placed before annotations/decorators
+   *
+   * @private
+   * @param {FunctionAtLine} funcAtLine
+   * @returns {number}
+   * @memberof BrightScriptCommenter
+   */
+  private getCommentStartLine(funcAtLine: FunctionAtLine): number {
+    let startLine = <number>funcAtLine?.lineNumber;
+
+    if (funcAtLine?.funcStmt?.annotations?.length && funcAtLine?.funcStmt?.annotations?.length > 0) {
+      const numberOfAnnotationLines = funcAtLine.funcStmt.range.start.line - funcAtLine.funcStmt.annotations[0].range.start.line;
+      startLine -= numberOfAnnotationLines;
+    }
+    return startLine;
+  }
 
 
   /**

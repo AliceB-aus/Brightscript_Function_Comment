@@ -18,6 +18,8 @@ Example:
     ''''''''
     Function OpenView( content as Object, viewId = "" as String) as String
 
+For Brighterscript functions and methods, comments will be inserted before any annotations.
+
 ## Usage
 
 This extension adds a BrightScriptDoc-style comment to a Brightscript function. The comment will be placed as a "snippet" with tab stops to easily allow adding extra detail.
