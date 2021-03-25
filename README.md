@@ -12,11 +12,13 @@ Example:
     ''''''''
     ' OpenView:
     '
-    ' @param  {Object} content
-    ' @param  {String} [viewId=""]
-    ' @returns String
+    ' @param  {object} content
+    ' @param  {string} [viewId=""]
+    ' @returns string
     ''''''''
     Function OpenView( content as Object, viewId = "" as String) as String
+
+For Brighterscript functions and methods, comments will be inserted before any annotations.
 
 ## Usage
 
@@ -54,16 +56,14 @@ Brightscript Function Comment has a few options for styling the comments:
   When enabled, adds extra comment markers at beginning and end (''''') to delineate the comment. (default - true)
 - `brightscriptcomment.addFunctionName`:
   When enabled, adds the function name and a colon to the comment. (default - true)
-- `brightscriptcomment.useLowercaseTypeName`:
-  When enabled, docs will use 'string' or 'object' instead of 'String' or 'Object', etc. (default - false)
-- `brightscriptcomment.useSimpleTypeNames`:
-  When enabled, docs use 'Integer' and 'LongInteger' instead of 'Int32' and 'Int64' (default - true)
+- `brightscriptcomment.useUppercaseTypeName`:
+  When enabled, docs will use 'String' or 'Object' instead of 'string' or 'object', etc. (default - false)
 - `brightscriptcomment.useDynamicIfNoTypeGiven`:
   When enabled, params will use 'Dynamic' as their types if no type was given (default - false)
 - `brightscriptcomment.addReturnOnVoidFunctions`
-  When enabled, functions that are 'as void' and subs will not have the @return tag  (default - false)
+  When enabled, functions that are 'as void' and subs will not have the @return tag (default - false)
 - `brightscriptcomment.addReturnOnVoidFunctions`
-  When enabled, warns the user when a sub returns a non 'as void' property  (default - true)
+  When enabled, warns the user when a sub returns a non 'as void' property (default - true)
 
 ## Credit
 
@@ -71,7 +71,7 @@ Credit to https://github.com/microsoft/vscode-comment for the base code used in 
 
 Many ideas and code samples were used from https://github.com/joelday/vscode-docthis
 
-Thanks to @markwpearce for the help and significant feature uplift 
+Thanks to @markwpearce for the help and significant feature uplift
 
 ## Issues and Contributing:
 
